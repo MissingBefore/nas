@@ -4,7 +4,7 @@ NAS系统SQL日志
 
 ## UML总览
 
-![](3 概要设计\NAS_SQL总览.jpg)
+![](https://github.com/MissingBefore/nas/blob/main/nas/3%20%E6%A6%82%E8%A6%81%E8%AE%BE%E8%AE%A1/NAS_SQL%E6%80%BB%E8%A7%88.jpg)
 
 ## 1.首页：nas_user_reservation按日期查询显示当日预约
 
