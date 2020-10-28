@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>消耗品出库</title>
+<link type="text/css" rel="stylesheet"
+	href="fontsawesome/css/font-awesome.css" />
+<link type="text/css" rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="main_box">
+		<div class="cont_box signform_box">
+			<form action="#" method="post" id="sign_form">
+				<ul class="addpro_box">
+					<li><input type="text" placeholder="请输入出库数量" name="digits"
+						id="digits" required data-rule-digits="true"
+						data-msg-required="出库数量不能为空" data-msg-digits="请输入正整数" /></li>
+				</ul>
+				<div class="probtn_box clearfix">
+					<input type="submit" value="确定" class="btn blue_btn" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--javascript include-->
+	<script src="js/jquery-2.2.1.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/jquery.validate.min.js"></script>
+	<script src="js/jquery.form.min.js"></script>
+	<script src="js/other.js"></script>
+	<script>
+			$(function(){
+				
+				var Wparent = window.parent.document,
+				tipBg = "<div class='tip_bg'></div>",
+				tipBox = "<div class='tip_box'></div>";
+				
+				function DelTipWidth(Twidth,Theight){
+					$(".tip_box",Wparent).css({"width":Twidth+"px","height":Theight+"px","margin-top":-(Theight/2)+"px","margin-left":-(Twidth/2)+"px"});
+					$(".tip_close",Wparent).on("click",Tipclose);
+				}
+				//=====关闭弹出窗
+				function Tipclose(){
+					$(".tip_box",Wparent).remove(); //移除新增的外层className
+					$(".tip_bg",Wparent).remove(); //移除新增的背景className
+				}
+				//$("body").other({formId:"#sign_form",formUrl:"#"});//formUrl 表单请求地址
+				$(".probtn_box .btn").click(function(){
+					var url=window.location.search; //获取url中"?"符后的字串  
+					if(url.indexOf("?")!=-1){
+						dataId = url.substr(url.indexOf("=")+1);
+					}
+					var digits=window.document.getElementById("digits").value;
+					$.getJSON("./ExpensesServlet",
+							{"method":"sign_Out","id":dataId,"digits":digits},
+							function callback(json){
+								alert(json.msg);
+								},
+							);
+				});
+			});
+		</script>
+</body>
+</html>

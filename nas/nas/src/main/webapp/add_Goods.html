@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>添加商品</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+		<style>
+		.ss_box{position:relative;display:inline-block;width:calc(30% + 24px);}
+		.ss_box dl{position:absolute;top:36px;left:0;width:100%;max-height:200px;background-color:#fff;border:1px solid #ddd;overflow:auto;display:none;}
+		.ss_box dt{padding:10px;}
+		.ss_box dd{padding:5px 10px;cursor:context-menu;}
+		.ss_box dd:hover{background-color:#ddd;}
+		</style>
+	</head>
+	<body>
+		<div class="main_box">
+			<h2><span></span>添加商品</h2>
+			<div class="cont_box">
+				<form action="#" method="" id="addPro_form">
+					<ul class="addpro_box">
+						<li class="clearfix" style="overflow:inherit;">
+							
+						</li>
+						<li>
+							<label>商品名称：</label>
+							<input type="text" id="name" placeholder="请输入商品名称" name="proname" required data-rule-proname="true" data-msg-required="商品名称不能为空"/>
+						</li>
+						<li>
+							<label>售价：</label>
+							<input type="text" id="price"  placeholder="请输入商品售价" id="pricein" name="pricein" required data-rule-pricein="true" data-msg-required="商品售价不能为空"/>
+						</li>
+						<li>
+							<label>销售提成：</label>
+							<input type="text" id="tc" placeholder="请输入销售提成" id="sale" name="ticheng" required data-rule-pricein="true" data-msg-required="销售提成不能为空"/>
+						</li>
+						<li>
+							<label>库存：</label>
+							<input type="text" id="dg" placeholder="请输入商品库存" name="digits" required data-rule-digits="true" data-msg-required="商品库存不能为空，无库存请填“0”" data-msg-digits="请输入正整数"/>
+						</li>
+						<li>
+							<label>状态：</label>
+							<select id="state" name="state">
+								<option value="1">下架</option>
+								<option value="2">上架</option>
+							<select>
+						</li>
+						<li>
+							<label>所属分类：</label>
+							<select id="lei" name="classfiy" required data-msg-required="所属分类不能为空">
+								
+							<select>
+						</li>
+						<li>
+							<label>商品描述：</label>
+							<textarea id="ms" rows="3" name="detail"></textarea>
+						</li>
+					</ul>
+					<div class="probtn_box clearfix">
+						<input type="button" id="tj" value="添加商品" class="btn blue_btn submit"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/jquery.form.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+		//设置点击事件添加商品时选择商品类型
+		//在此处设置点击事件只能触发一次
+			$('#lei').bind('click', function() {$.ajax({url:'./goods',
+            dataType: "json",
+            data:{
+               method:"showGoodsLeiList"
+            },
+            type :'GET',
+            success:function(data){
+            	if(data!=null){
+            		 var html="";
+	                    for(var i=0;i<data.length;i++){
+	                    	 $("#lei").append('<option value=' +data[i].class_id+ '>' + data[i].class_name+ '</option>');
+	                    }
+            		
+            		
+            	} }
+           
+			});
+			
+		    $(this).unbind('click');
+		    
+		});
+		
+		
+		
+		window.onload=function(){$("#tj").click(function fun(){
+		$.ajax({
+			url:'./goods',
+            dataType: "json",
+            data:{
+                method:"tianJiaGoods",
+                proname: $("#name").val(),
+                pricein:$("#price").val(),
+                ticheng:$("#tc").val(),
+                digits:$("#dg").val(),
+                state:$("#state").val(),
+                classfiy:$("#lei").val(),
+                detail:$("#ms").val()
+                
+            },
+            type :'GET'
+			
+			
+			
+		});
+		
+		
+		
+			})}
+		
+		
+		$(function(){
+				$("body").other({formId:"#addPro_form",formUrl:""});//formUrl 表单请求地址
+				//select search
+				$.selectSearch($(".ss_box"));
+			});
+		</script>
+	</body>
+</html>

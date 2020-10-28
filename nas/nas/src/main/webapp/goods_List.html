@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>商品列表</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<h2><span></span>商品列表</h2>
+			<div class="cont_box">
+				<table border="0" cellspacing="0" cellpadding="0" class="table" id="table_bo">
+				<thead>
+					<tr>
+						<th>商品名称</th>
+						<th>所属分类</th>
+						<th>价格</th>
+						<th>库存</th>
+						<th>状态</th>
+						<th>添加时间</th>
+						<th width="268">操作</th>
+					</tr>
+				</thead>
+				<tbody id="content">
+					
+				</tbody>
+			</table>
+		</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+			$(function(){
+				$.ajax({url:"./goods",
+				    dataType: "json", 
+				    async: false,
+		            data:{
+		                method:"showGoodsList",
+		            },
+		            type :'GET',
+		            success:function(data){ 
+		            	
+		            	if(data!=null){
+		           		 var html="";
+		                    for(var i=0;i<data.length;i++){
+		                    	var state;
+		                    	if(data[i].goods_state==1){
+		                    		state="上架";
+		                    		
+		                    	}else{state="下架";}
+		                    	html+="<tr id="+data[i].id+">"+"<td>"+data[i].goods_name+"</td>"
+		                    		+"<td>"+data[i].class_name+"</td>"
+		                    		+"<td>"+data[i].goods_price+"</td>"
+		                    		+"<td>"+data[i].goods_stock+"</td>"
+		                    		+"<td><a class=\"table_btn table_warning up_shelf\"><span onclick=\"fun('"+data[i].id+"','"+data[i].goods_state+"')\">"+state+"</span></a></td>"
+		                    		+"<td>"+data[i].goods_addtime+"</td>"
+		                    		+"<td><a href=\"javascript:void(0);\" class=\"table_btn table_edit edit_btn\"><i class=\"fa fa-edit\"></i><span>编辑</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_del del_btn\"><i class=\"fa fa-trash-o\"></i><span onclick=\"fun1('"+data[i].id+"')\">删除</span></a>+</td>"+"</tr>"
+		                    }
+		                    $("#content").html(html);
+							
+		           	}else{
+		           		alert("订单不存在");
+		           	}
+		            	
+		            }	});
+				//设置上下架状态
+				 fun=function(i,j){
+					$.ajax({url:"./goods",
+						dataType:"json",
+						type:"get",
+						data:{
+							method:"shangxiaJiaGoods",
+							id:i,
+							state:j
+							
+						}
+					});
+					
+				}
+					
+				//删除商品订单信息
+				fun1=function(i){
+					alert("商品已绑定，不能被删除");
+							
+					}
+					
+					
+				
+				
+				$("body").other({tableId:"#table_box",tableWrap:[0,1,6],tableAas:[ 5,"desc"],tableSearch:true});
+		/* 	$("body").tipWindow({method:"delete",Class:".del_btn",even:"click",Twidth:"400",Theight:"180",delUrl:""});//delUrl 删除请求地址 */
+				$("body").tipWindow({method:"edit",type:"form",Class:".edit_btn",even:"click",tipTit:"商品编辑",Twidth:"700",Theight:"600",editUrl:"edit_Goods.html"});//editUrl 编辑请求地址
+				 $("body").tipWindow({method:"Shelf",Twidth:"400",Theight:"180",shelfUrl:""});//shelfUrl 上下架请求地址 
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>编辑商品</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<div class="cont_box editpro_box">
+				<form action="#" method="post" id="editPro_form">
+					<ul class="addpro_box">
+						<li>
+							<label>商品名称：</label>
+							<input  id="name" type="text" placeholder="请输入商品名称" name="proname" required data-rule-proname="true" data-msg-required="商品编码不能为空"/>
+						</li>
+						<li>
+							<label>售价：</label>
+							<input id="price" type="text" placeholder="请输入商品售价" name="pricein" required data-rule-pricein="true" data-msg-required="商品售价不能为空"/>
+						</li>
+						<li>
+							<label>销售提成：</label>
+							<input id="tc" type="text" placeholder="请输入销售提成" id="sale" name="pricein" required data-rule-pricein="true" data-msg-required="销售提成不能为空"/>
+						</li>
+						<li>
+							<label>库存：</label>
+							<input id="cun" type="text" placeholder="请输入商品库存" name="digits" required data-rule-digits="true" data-msg-required="商品库存不能为空，无库存请填“0”" data-msg-digits="请输入正整数"/>
+						</li>
+						<li>
+							<label>状态：</label>
+							<select id="state" name="state">
+								<option value="1">下架</option>
+								<option value="2">上架</option>
+							<select>
+						</li>
+						<li>
+							<label>所属分类：</label>
+							<select id="xz" name="classfiy" required data-msg-required="所属分类不能为空">
+								
+							<select>
+						</li>
+						<li>
+							<label>商品描述：</label>
+							<textarea id="ms" rows="3" name="detail"></textarea>
+						</li>
+					</ul>
+					<div class="probtn_box clearfix">
+						<input id="tj" type="button" value="保存修改" class="btn blue_btn submit"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/jquery.form.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+		//设置展示类型的点击事件
+			$('#xz').bind('click', function() {$.ajax({url:'./goods',
+            dataType: "json",
+            data:{
+               method:"showGoodsLeiList"
+            },
+            type :'GET',
+            success:function(data){
+            	if(data!=null){
+            		 var html="";
+	                    for(var i=0;i<data.length;i++){
+	                    	 $("#xz").append('<option value=' +data[i].class_id + '>' + data[i].class_name+ '</option>');
+	                    }
+            		
+            		
+            	} }
+           
+			});
+			
+		    $(this).unbind('click');
+		    
+		});
+		
+		
+		
+		
+		
+			    	
+			    $(function(){
+			    	$("#tj").click(function(){
+			    
+					$.ajax({url:"./goods",
+					    dataType: "json", 
+				         data:{
+		                method:"gaiGoods",
+		                id:getParam('id'),
+		                name:$("#name").val(),
+		                price:$("#price").val(),
+		               tc:$("#tc").val(),
+		                cun:$("#cun").val(),
+		                state:$("#state").val(),
+		                 xz:$("#xz").val(),
+		                ms:$("#ms").val(),
+		                
+		            },
+		            type :'get'});
+			    });	
+					
+					
+		    $("body").other({formId:"#editPro_form",formUrl:"goods_List.html"});//formUrl 表单请求地址
+		    })	;
+				
+		
+		</script>
+		
+		<script type="text/javascript">
+		var getParam = function(name){
+		    var search = document.location.search;
+		    var pattern = new RegExp("[?&]"+name+"\=([^&]+)", "g");
+		    var matcher = pattern.exec(search);
+		    var items = null;
+		    if(null != matcher){
+		            try{
+		                    items = decodeURIComponent(decodeURIComponent(matcher[1]));
+		            }catch(e){
+		                    try{
+		                            items = decodeURIComponent(matcher[1]);
+		                    }catch(e){
+		                            items = matcher[1];
+		                    }
+		            }
+		    }
+		    return items;
+		};
+		</script>
+		
+	</body>
+</html>

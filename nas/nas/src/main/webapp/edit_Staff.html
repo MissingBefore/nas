@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>添加员工</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<div class="cont_box editpro_box">
+				<form action="#" method="post" id="addstaff_form">
+					<ul class="addpro_box">
+						<li>
+							<label>姓名：</label>
+							<input type="text" id="name" placeholder="请输员工姓名" name="fullname" required data-rule-fullname="true" data-msg-required="员工姓名不能为空"/>
+						</li>
+						<li>
+							<label>手机号：</label>
+							<input type="text" id="phone" placeholder="请输入手机号" name="mobile" required data-rule-mobile="true" data-msg-required="手机号不能为空"/>
+						</li>
+						<li>
+							<label>性别：</label>
+							<div class="radio_box">
+								<input type="radio" value="男" name="sex" class="input_radio1" required data-msg-required="性别不能为空"/><span>男</span>
+							</div>
+							<div class="radio_box">
+									<input type="radio" value="女"  name="sex" class="input_radio1"/><span>女</span>
+							</div>
+						</li>
+						<li>
+							<label>岗位：</label>
+							<select id="selectorPost" class="selectorPost" name="post" required data-msg-required="所属岗位不能为空">
+								<option value="">请选择所属岗位</option>
+								<option value="店长" id="manager">店长</option>
+								<option value="施工" id="constructor">施工</option>
+								<option value="销售" id="sale">销售</option>
+							<select>
+						</li>
+						<li>
+							<label>是否在岗：</label>
+							<select id="selectorJob" class="selectorJob" name="state">
+								<option value="在职" id="onjob">在职</option>
+								<option value="离职" id="outjob">离职</option>
+							<select>
+						</li>
+					</ul>
+					<div class="probtn_box clearfix">
+						<input type="button" onclick="updateEmployee()" value="确认保存" class="btn blue_btn"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/jquery.form.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+			$(function(){
+				$.ajax({
+					url:"./employeeServlet",
+					dataType: "json",
+			        data:{
+			        	method:"preUpdateEmployee",
+			        	id:getParam('id'),
+			        },
+			        type :'GET',
+			        success:function(data){
+			        	$("#name").val(data[0].emp_name);
+			        	$("#phone").val(data[0].emp_phone);
+			        	var v=data[0].emp_gender;
+			        	//$("input:radio[value='0']").attr('checked','true');
+			        	var radioObj=$('.input_radio1');
+			        	for(var i=0;i<radioObj.length;i++){
+			        		if(radioObj[i].value==v){
+			        			radioObj[i].checked='checked';
+			        			break;
+			        		}
+			        		radioObj[i].checked='unchecked';
+			        	}
+			        	
+			        	var post=data[0].emp_post;
+			        	if(post=="店长"){
+				        	$(".selectorPost").val("店长");
+			        	}else if(post=="销售"){
+			        		$(".selectorPost").val("销售");
+			        	}else{
+			        		$(".selectorPost").val("施工")
+			        	}
+			        	
+			        	var state=data[0].emp_state;
+			        	if(state=="1"){
+				        	$(".selectorJob").val("在职");
+			        	}else{
+			        		$(".selectorJob").val("离职");
+			        	}
+			        }
+				});
+				$("body").other({formId:"#addstaff_form",formUrl:"#"});//formUrl 表单请求地址
+			});
+			
+			function updateEmployee(){
+				$.post({
+					url:"./employeeServlet?method=updateEmployee",
+					//dataType: "json",
+					data:{
+						id:getParam('id'),
+						emp_name:$("#name").val(),
+						emp_phone:$("#phone").val(),
+						emp_gender:$('input:radio:checked').val(),
+						emp_post:$("#selectorPost").val(),
+						emp_state:$("#selectorJob").val(),
+	                },
+	                success:function(result){
+	                	/* var result=eval('('+result+')'); */
+						if(result=="success"){
+							alert("修改成功");
+							window.location.reload();
+						}else{
+							alert("修改失败");
+						}
+	                }
+				});
+			}
+		</script>
+		
+		<script type="text/javascript">
+		var getParam = function(name){
+		    var search = document.location.search;
+		    var pattern = new RegExp("[?&]"+name+"\=([^&]+)", "g");
+		    var matcher = pattern.exec(search);
+		    var items = null;
+		    if(null != matcher){
+		            try{
+		                    items = decodeURIComponent(decodeURIComponent(matcher[1]));
+		            }catch(e){
+		                    try{
+		                            items = decodeURIComponent(matcher[1]);
+		                    }catch(e){
+		                            items = matcher[1];
+		                    }
+		            }
+		    }
+		    return items;
+		};
+		</script>
+	</body>
+</html>

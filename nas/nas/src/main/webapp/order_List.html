@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>订单列表</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/datepicker.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<h2><span></span>订单列表</h2>
+			<form action="#" method="post" id="order_shform">
+				<div class="search_box clearfix">
+					<input type="text" class="f_left" id="number" name="order_code" onblur="check()" placeholder="输入手机号或订单号查询" style="margin-right:15px;"/>
+					<label class="f_left">开始日期：</label>
+					<div class="date_box">
+						<input type="text" name="start" id="start_date" readonly/>
+						<i class="fa fa-calendar"></i>
+					</div>
+					<label class="f_left">结束日期：</label>
+					<div class="date_box">
+						<input type="text" name="end" id="end_date" readonly/>
+						<i class="fa fa-calendar"></i>
+					</div>
+					<input type="button" value="搜索" class="btn blue_btn search"/>
+				</div>
+			</form>
+			<div class="cont_box">
+				<table border="0" cellspacing="0" cellpadding="0" class="table">
+				<thead>
+					<tr>
+						<th>订单号</th>
+						<th>金额</th>
+						<th>支付方式</th>
+						<th>会员</th>
+						<th>手机号</th>
+						<th>状态</th>
+						<th>开单日期</th>
+						<th>订单备注</th>
+						<th width="200">操作</th>
+					</tr>
+				</thead>
+				<tbody id="content">
+					
+				</tbody>
+			</table>
+		</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+			$(function(){
+				$.ajax({
+	                url:'./orderServlet',
+	                dataType: "json",
+	                data:{
+	                    method:"showOrderList",
+	                },
+	                type :'GET',
+	                success:function(data)
+	                {
+	                	if(data.toString()!=null){
+	                		 var html="";
+	 	                    for(var i=0;i<data.length;i++){
+	 	                    	html+="<tr id="+data[i].order_id+">"
+	 	                    		+"<td id=\"id\">"+data[i].order_id+"</td>"
+	 	                    		+"<td>"+data[i].order_price+"</td>"
+	 	                    		+"<td>"+data[i].order_payMethod+"</td>"
+	 	                    		+"<td>"+data[i].user_name+"</td>"
+	 	                    		+"<td>"+data[i].user_phone+"</td>"
+	 	                    		+"<td>"+data[i].order_state+"</td>"
+	 	                    		+"<td>"+data[i].order_createdate+"</td>"
+	 	                    		+"<td>"+data[i].remarks+"</td>"
+	 	                    		+"<td><a href=\"javascript:void(0);\" class=\"table_btn table_info detail_btn\"><i class=\"fa fa-eye\"></i><span>订单详情</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_edit edit_btn\"><i class=\"fa fa-edit\"></i><span>编辑订单</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_del del_btn\"><i class=\"fa fa-recycle\"></i><span onclick=\"deleteOrder()\">退单</span></a></td>"
+	 	                    		+"</tr>"
+	 	                    }
+	 	                    $("#content").html(html);
+	 						$("body").other({tableId:"#table_box",tableWrap:[0,1,2,3,4,7,8],tableAas:[6,"desc"]});
+	 						/* $("body").tipWindow({method:"delete",Class:".del_btn",even:"click",deleteTxt:"确认要退单吗？",Twidth:"400",Theight:"180",delUrl:"#"});//delUrl 退单请求地址 */
+	 						$("body").tipWindow({method:"edit",type:"form",Class:".detail_btn",even:"click",tipTit:"订单详情",Twidth:"800",Theight:"600",editUrl:"order_Detail.html"});//editUrl 编辑请求地址
+	 						$("body").tipWindow({method:"edit",type:"form",Class:".edit_btn",even:"click",tipTit:"编辑订单",Twidth:"800",Theight:"600",editUrl:"order_edit.html"});//editUrl 编辑请求地址
+	                	}else{
+	                		alert("订单不存在");
+	                	}
+	                   
+	                }
+	            });
+				//订单搜索
+				$(".search").click(function(){
+					$.ajax({
+						url:"./orderServlet",
+						dataType: "json",
+						data:{
+		                    method:"queryOrderListByTime",
+		                    start_date:$("#start_date").val(),
+		                    end_date:$("#end_date").val()
+		                },
+						success:function(data){
+							var html="";
+		                    for(var i=0;i<data.length;i++){
+		                    	html+="<tr id="+data[i].order_id+">"
+		                    		+"<td id=\"id\">"+data[i].order_id+"</td>"
+		                    		+"<td>"+data[i].order_price+"</td>"
+		                    		+"<td>"+data[i].order_payMethod+"</td>"
+		                    		+"<td>"+data[i].user_name+"</td>"
+		                    		+"<td>"+data[i].user_phone+"</td>"
+		                    		+"<td>"+data[i].order_state+"</td>"
+		                    		+"<td>"+data[i].order_createdate+"</td>"
+		                    		+"<td>"+data[i].remarks+"</td>"
+		                    		+"<td><a href=\"javascript:void(0);\" class=\"table_btn table_info detail_btn\"><i class=\"fa fa-eye\"></i><span>订单详情</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_edit edit_btn\"><i class=\"fa fa-edit\"></i><span>编辑订单</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_del del_btn\"><i class=\"fa fa-recycle\"></i><span onclick=\"deleteOrder()\">退单</span></a></td>"
+		                    		+"</tr>"
+		                    }
+		                    $("#content").html(html);
+							$("body").other({tableId:"#table_box",tableWrap:[0,1,2,3,4,7,8],tableAas:[6,"desc"]});
+							/* $("body").tipWindow({method:"delete",Class:".del_btn",even:"click",deleteTxt:"确认要退单吗？",Twidth:"400",Theight:"180",delUrl:"#"});//delUrl 退单请求地址 */
+							$("body").tipWindow({method:"edit",type:"form",Class:".detail_btn",even:"click",tipTit:"订单详情",Twidth:"800",Theight:"600",editUrl:"order_Detail.html"});//editUrl 编辑请求地址
+							$("body").tipWindow({method:"edit",type:"form",Class:".edit_btn",even:"click",tipTit:"编辑订单",Twidth:"800",Theight:"600",editUrl:"order_edit.html"});//editUrl 编辑请求地址
+						},
+						error:function(data){
+							alert(data);
+						}
+					});
+				});
+			});
+			
+			function check() {
+				$.post({
+					url:"./orderServlet",
+					dataType: "json",
+					data:{
+	                    method:"queryOrderList",
+	                    number:$("#number").val(),
+	                    start_date:$("#start_date").val(),
+	                    end_date:$("#end_date").val()
+	                },
+					success:function(data){
+						var html="";
+	                    for(var i=0;i<data.length;i++){
+	                    	html+="<tr id="+data[i].order_id+">"
+	                    		+"<td id=\"id\">"+data[i].order_id+"</td>"
+	                    		+"<td>"+data[i].order_price+"</td>"
+	                    		+"<td>"+data[i].order_payMethod+"</td>"
+	                    		+"<td>"+data[i].user_name+"</td>"
+	                    		+"<td>"+data[i].user_phone+"</td>"
+	                    		+"<td>"+data[i].order_state+"</td>"
+	                    		+"<td>"+data[i].order_createdate+"</td>"
+	                    		+"<td>"+data[i].remarks+"</td>"
+	                    		+"<td><a href=\"javascript:void(0);\" class=\"table_btn table_info detail_btn\"><i class=\"fa fa-eye\"></i><span>订单详情</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_edit edit_btn\"><i class=\"fa fa-edit\"></i><span>编辑订单</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_del del_btn\"><i class=\"fa fa-recycle\"></i><span onclick=\"deleteOrder()\">退单</span></a></td>"
+	                    		+"</tr>"
+	                    }
+	                    $("#content").html(html);
+						$("body").other({tableId:"#table_box",tableWrap:[0,1,2,3,4,7,8],tableAas:[6,"desc"]});
+						/* $("body").tipWindow({method:"delete",Class:".del_btn",even:"click",deleteTxt:"确认要退单吗？",Twidth:"400",Theight:"180",delUrl:"#"});//delUrl 退单请求地址 */
+						$("body").tipWindow({method:"edit",type:"form",Class:".detail_btn",even:"click",tipTit:"订单详情",Twidth:"800",Theight:"600",editUrl:"order_Detail.html",});//editUrl 编辑请求地址
+						$("body").tipWindow({method:"edit",type:"form",Class:".edit_btn",even:"click",tipTit:"编辑订单",Twidth:"800",Theight:"600",editUrl:"order_edit.html"});//editUrl 编辑请求地址
+					}
+				});
+			}
+			
+			function deleteOrder(){
+				$.post({
+					url:"./orderServlet?method=deleteOrder",
+					//dataType: "json",
+					data:{
+						order_id:$("#id").text()
+	                },
+	                success:function(result){
+	                	/* var result=eval('('+result+')'); */
+						if(result=="success"){
+							alert("退单成功!");
+							window.location.reload();
+						}else{
+							alert("退单失败");
+						}
+	                }
+				});
+			}
+		</script>
+	</body>
+</html>

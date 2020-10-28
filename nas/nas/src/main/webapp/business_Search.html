@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>业绩查询</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/datepicker.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<h2><span></span>业绩查询</h2>
+			<form action="#" method="post">
+				<div class="search_box clearfix">
+					<label class="f_left">开始日期：</label>
+					<div class="date_box">
+						<input type="text" name="start" id="start_date" readonly/>
+						<i class="fa fa-calendar"></i>
+					</div>
+					<label class="f_left">结束日期：</label>
+					<div class="date_box">
+						<input type="text" name="end" id="end_date" readonly/>
+						<i class="fa fa-calendar"></i>
+					</div>
+					<input type="button" id = "submit" value="搜索" class="btn blue_btn"/>
+					<input type="button" id = "downinfo" value="导出门店业绩" class="btn btn_info">
+				</div>
+			</form>
+			<div class="cont_box" style="border-top:1px dashed #ddd;">
+				<p class="business_tit">营业额详情表</p>
+				<table id = "tableid" border="0" cellspacing="0" cellpadding="0" class="table business_table">
+					<tbody id = "tbody-result2">
+						
+					</tbody>
+				</table>
+				<p class="business_tit">营业额说明</p>
+				<ul class="business_info">
+					<li>营业总额 = 充值收入 + 非会员收入 + 大礼包收入</li>
+					<li>充值收入 = 储值卡收入 + 年卡收入</li>
+					<li>储值卡消费总额=储值卡收入</li>
+					<li>年卡消费总次数： 次</li>
+					<li>年卡开卡总数： 张</li>
+				</ul>
+				<p class="business_tit">非会员收入详情表</p>
+				<table border="0" cellspacing="0" cellpadding="0" class="table">
+					<thead>
+						<tr>
+							<th class="slash">
+								<div class="slash_line">
+									
+								</div>
+							</th>
+							<th>现金</th>
+							<th>微信</th>
+							<th>刷卡</th>
+							<th>体验卡</th>
+							<th>总计</th>
+						</tr>
+					</thead>
+					<tbody id = "tbody-result">
+						
+					</tbody>
+				</table>
+				<p class="business_tit">储值卡详情表</p>
+				<table border="0" cellspacing="0" cellpadding="0" class="table business_table">
+					<tbody id = "tbody-result1">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+			$(function(){
+				var tdW = $(".slash").width(),
+					tdH = $(".slash").height();
+				$(".slash_line").css({"border-left-width":parseInt(tdW),"border-top-width":parseInt(tdH)});
+				var jsons;
+				var incomes;
+				var sumincomes;
+				var sums;
+				$("#submit").click(function(){	
+					var start_date = window.document.getElementById("start_date").value;
+					var end_date = window.document.getElementById("end_date").value;
+					$.getJSON("./BusinessServlet",
+							{"method":"search","start_date":start_date,"end_date":end_date},
+							function callback(json){
+								var business = json;
+								jsons = json;
+								for(var i = 0; i < business.length; i++){	
+									var income = business[i].cash_income+business[i].wechat_income+business[i].card_income+business[i].experienceCard_income;
+									incomes = income; 
+									$("#tbody-result").append(
+					                            "<tr><td>消费金额</td>"
+					                            +"<td>"+business[i].cash_income+"</td>"	 
+					                            +"<td>"+business[i].wechat_income+"</td>"
+					                            +"<td>"+business[i].card_income+"</td>"
+					                            +"<td>"+business[i].experienceCard_income+"</td>"
+					                            +"<td>"+income+"</td>"         
+					                            +"</tr>"	
+					                            )
+					                 var sum = business[i].urban_card+business[i].platinum_card+business[i].redDiamond_card ;        
+					                 sums = sum;
+									 $("#tbody-result1").append(
+					                            "<tr><td>都市储值卡</td>"
+					                            +"<td>"+business[i].urban_card+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>白金储值卡</td>"
+					                            +"<td>"+business[i].platinum_card+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>红钻储值卡</td>"
+					                            +"<td>"+business[i].redDiamond_card+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>总计</td>"
+					                            +"<td>"+sum+"</td>"	 					           
+					                            +"</tr>"
+					                            )
+					                 var sumincome = business[i].recharge_income+business[i].package_income+income ; 
+					                 sumincomes = sumincome;
+					                 $("#tbody-result2").append(
+					                            "<tr><td>充值收入</td>"
+					                            +"<td>"+business[i].recharge_income+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>非会员收入</td>"
+					                            +"<td>"+income+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>大礼包收入</td>"
+					                            +"<td>"+business[i].package_income+"</td>"	 					           
+					                            +"</tr>"
+					                            +"<tr><td>总计</td>"
+					                            +"<td>"+sumincome+"</td>"	 					           
+					                            +"</tr>"
+					                            )           
+								}
+							}
+							)
+				});
+				
+				$("#downinfo").click(function(){	
+					 // 列标题，逗号隔开，每一个逗号就是隔开一个单元格
+			        var str = ",,业绩查询\n"
+					str+= window.document.getElementById("end_date").value;
+					str+='\t,到,';
+					str+= window.document.getElementById("end_date").value;
+					str+='\t\n\n\n,,营业额详情表\n\n';
+					str+='充值收入,';
+					str+=jsons[0].recharge_income;
+					str+='\n非会员收入,';
+					str+=incomes;
+					str+='\n大礼包收入,';
+					str+=jsons[0].package_income;
+					str+='\n非会员收入,';
+					str+=sumincomes;
+					str+='\n\n\n,,非会员收入详情表\n';
+					str+='\n,现金,微信,刷卡,体验卡,总计\n';
+					str+='消费金额,'+jsons[0].cash_income+'\t,'+jsons[0].wechat_income+'\t,'+jsons[0].card_income+'\t,'+jsons[0].experienceCard_income+'\t,'+incomes;
+					str+='\t\n\n\n,,储值卡详情表\n';
+					str+='\n都市储值卡,';
+					str+=jsons[0].urban_card;
+					str+='\n白金储值卡,';
+					str+=jsons[0].platinum_card;
+					str+='\n红钻储值卡,';
+					str+=jsons[0].redDiamond_card;
+					str+='\n总计,';
+					str+=sums;
+			        // encodeURIComponent解决中文乱码
+			        var uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+			        // 通过创建a标签实现
+			        var link = document.createElement("a");
+			        link.href = uri;
+			        // 对下载的文件命名
+			        link.download =  "业绩数据表.csv";
+			        link.click(); 
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>本店会员</title>
+		<link type="text/css" rel="stylesheet" href="fontsawesome/css/font-awesome.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+	</head>
+	<body>
+		<div class="main_box">
+			<h2><span></span>本店会员</h2>
+			<div class="cont_box">
+				<table border="0" cellspacing="0" cellpadding="0" class="table" id="table_box">
+				<thead>
+					<tr>
+						<th>手机号</th>
+						<th>姓名</th>
+						<th>车辆总数</th>
+						<th>储值卡总数</th>
+						<th>年卡总数</th>
+						<th>大礼包总数</th>
+						<th>订单总数</th>
+						<th width="268">操作</th>
+					</tr>
+				</thead>
+				<tbody id="content">
+					
+				</tbody>
+			</table>
+		</div>
+		</div>
+		<!--javascript include-->
+		<script src="js/jquery-2.2.1.min.js"></script>
+		<script src="js/jquery.dataTables.min.js"></script>
+		<script src="js/bootstrap-datepicker.js"></script>
+		<script src="js/jquery.validate.min.js"></script>
+		<script src="js/other.js"></script>
+		<script>
+			$(function(){
+				
+				$.ajax({
+	                url:'./userManage',
+	                dataType: "json",
+	                data:{
+	                    method:"showUserList",
+	                },
+	                type :'GET',
+	                success:function(data)
+	                {
+	                	if(data.toString()!=null){
+	                		 var html="";
+	 	                    for(var i=0;i<data.length;i++){
+	 	                    	html+="<tr>"
+	 	                    		+"<td id=\"id\">"+data[i].phone+"</td>"
+	 	                    		+"<td>"+data[i].name+"</td>"
+	 	                    		+"<td>"+data[i].car_count+"</td>"
+	 	                    		+"<td>"+data[i].debit_count+"</td>"
+	 	                    		+"<td>"+data[i].yc_count+"</td>"
+	 	                    		+"<td>"+data[i].gift_count+"</td>"
+	 	                    		+"<td>"+data[i].order_count+"</td>"
+	 	                    		+"<td><a href=\"javascript:void(0);\" class=\"table_btn table_edit see_order\"><i class=\"fa fa-eye\"></i><span>查看订单</span></a><a href=\"javascript:void(0);\" class=\"table_btn table_info edit_btn\"><i class=\"fa fa-eye\"></i><span>查看详情</span></a></td>"
+	 	                    		+"</tr>"
+	 	                    }
+	 	                    $("#content").html(html);
+	 	                    //$("body").other({tableId:"#table_box",tableWrap:[1,2,8],tableAas:[ 0,"desc"],tableSearch:true});
+	 	  					$("body").tipWindow({method:"delete",Class:".del_btn",even:"click",Twidth:"400",Theight:"180",delUrl:"#"});//delUrl 删除请求地址
+	 	  					$("body").tipWindow({method:"edit",type:"form",Class:".edit_btn",even:"click",tipTit:"会员详情",Twidth:"1200",Theight:"800",editUrl:"user_Detail.html"});//editUrl 编辑请求地址
+	 	  					
+	 	  					$(".see_order").click(function(){
+	 	  						var Wparent = window.parent.document,
+	 	  							dataId = $(this).parents("tr").prop("id");
+	 	  						$.ajax({
+	 	  							type:"post",
+	 	  							url:"order_List.html",
+	 	  							data:{"id":dataId},
+	 	  							success:function(data){
+	 	  								$("body",Wparent).find(".nav li p[data-id='order']").trigger("click");
+	 	  								$("body",Wparent).find("iframe").prop("src","order_List.html");
+	 	  							}
+	 	  						});
+	 	  					}); 
+	                	}else{
+	                		alert("订单不存在");
+	                	}
+	                   
+	                }
+	            });
+				
+			});
+		</script>
+	</body>
+</html>
